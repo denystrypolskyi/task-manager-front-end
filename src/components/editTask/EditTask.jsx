@@ -163,11 +163,9 @@ const EditTask = () => {
           </button>
           {btnPressed && (
             <div
-              className={`text-${
-                Object.keys(errors).length > 0 ? "red-500" : "green-700"
-              } text-sm absolute bottom-5 right-5 border rounded-lg select-none border-${
-                Object.keys(errors).length > 0 ? "red-500" : "green-700"
-              } p-2.5`}
+              className={`${
+                Object.keys(errors).length > 0 ? "text-red-500 border-red-500" : "text-green-700 border-green-700"
+              } text-sm absolute bottom-5 right-5 border rounded-lg select-none p-2.5`}
             >
               {Object.keys(errors).length > 0 ? (
                 <>
