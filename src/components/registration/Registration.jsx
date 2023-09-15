@@ -123,29 +123,19 @@ const Registration = () => {
               Create an account
             </button>
 
-            {btnPressed && (
-              <div
-                className={`${
-                  errors.error != ""
-                    ? "text-red-500 border-red-500"
-                    : "text-green-700 border-green-700"
-                } text-sm absolute bottom-5 right-5 p-2.5 border rounded-lg select-none"`}
-              >
-                {errors.email ||
-                errors.password ||
-                errors.error != "" ? (
-                  <div>
-                    {errors.email && <p className="border-b">{errors.email}</p>}
-                    {errors.password && (
-                      <p className="border-b">{errors.password}</p>
-                    )}
-                    {errors.error && <p className="border-b">{errors.error}</p>}
-                  </div>
-                ) : (
-                  <div>
-                    <p className="border-b">Account created</p>
-                  </div>
-                )}
+            {(errors.email ||
+              errors.password ||
+              (errors.error != "" && errors.error)) && (
+              <div className="text-red-700 text-sm absolute bottom-5 right-5 p-2.5 border rounded-lg select-none border-red-500">
+                      {errors.email && (
+                        <p className="border-b">{errors.email}</p>
+                      )}
+                      {errors.password && (
+                        <p className="border-b">{errors.password}</p>
+                      )}
+                      {errors.error && (
+                        <p className="border-b">{errors.error}</p>
+                      )}
               </div>
             )}
             <p className="text-sm font-light text-gray-500">
