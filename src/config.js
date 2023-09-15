@@ -1,0 +1,1 @@
+export const API_URL = "https://task-manager-server-qgf1.onrender.com/api";
