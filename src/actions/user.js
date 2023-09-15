@@ -1,14 +1,6 @@
 import axios from "axios";
 import { setError, setUser } from "../reducers/userReducer";
-import { API_URL } from "../config"
-
-const handleErrors = (dispatch, e) => {
-  const error = {
-    isError: true,
-    message: e.response?.data?.message || "An error occurred",
-  };
-  dispatch(setError(error));
-};
+import { API_URL } from "../config";
 
 export const registration = (email, password) => {
   return async (dispatch) => {
@@ -18,7 +10,7 @@ export const registration = (email, password) => {
         password,
       });
     } catch (e) {
-      handleErrors(dispatch, e);
+      dispatch(setError({ isError: true, message: e.response.data.message }));
     }
   };
 };
@@ -34,7 +26,7 @@ export const login = (email, password) => {
       dispatch(setUser(user));
       localStorage.setItem("token", token);
     } catch (e) {
-      handleErrors(dispatch, e);
+      dispatch(setError({ isError: true, message: e.response.data.message }));
     }
   };
 };

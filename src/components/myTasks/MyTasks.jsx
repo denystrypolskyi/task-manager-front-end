@@ -40,7 +40,7 @@ const MyTasks = () => {
         setLoading(false);
       });
     }
-  }, [userId]);
+  }, [userId, tasks]);
 
   return (
     <div>

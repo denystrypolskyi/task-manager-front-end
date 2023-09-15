@@ -80,10 +80,6 @@ export const deleteTask = async (taskId, userId) => {
       `${API_URL}/task/deleteTask`,
       { taskId: taskId, userId: userId }
     );
-
-    if (response.data.message === `Task ${taskId} deleted`) {
-      window.location.reload();
-    }
   } catch (e) {
     alert(e.response.data.message);
   }

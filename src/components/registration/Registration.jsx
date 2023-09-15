@@ -15,6 +15,7 @@ const Registration = () => {
 
   const isError = useSelector((state) => state.user.error.isError);
   const errorMessage = useSelector((state) => state.user.error.message);
+  const isLoading = useSelector((state) => state.user.isLoading);
   const isAuth = useSelector((state) => state.user.isAuth);
 
   const navigate = useNavigate();
@@ -132,7 +133,7 @@ const Registration = () => {
               >
                 {errors.email ||
                 errors.password ||
-                (errors.error != "" && errors.error) ? (
+                errors.error != "" ? (
                   <div>
                     {errors.email && <p className="border-b">{errors.email}</p>}
                     {errors.password && (
