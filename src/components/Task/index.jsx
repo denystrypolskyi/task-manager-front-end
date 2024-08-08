@@ -1,10 +1,20 @@
 import React from "react";
-import { deleteTask } from "../../actions/task";
+import { deleteTaskAction } from "../../actions/task.actions";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
-const NewTask = (props) => {
+const Task = (props) => {
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
 
+  const handleEdit = () => {
+    navigate(`/editTask/${props.id}`);
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteTaskAction(props.id, props.userId));
+  };
   const getPriorityStyle = () => {
     switch (props.priority) {
       case "Low":
@@ -14,7 +24,7 @@ const NewTask = (props) => {
       case "High":
         return "bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 shadow-md";
       default:
-        return ""; // Handle the default case or return an empty string
+        return "";
     }
   };
 
@@ -62,13 +72,13 @@ const NewTask = (props) => {
         <div className="mt-5 flex items-center w-full">
           <div className="flex justify-between w-full gap-3.5">
             <button
-              onClick={() => navigate(`/editTask/${props.id}`)}
+              onClick={handleEdit}
               className="text-yellow-500 hover:text-white border border-yellow-500 hover:bg-yellow-700 focus:ring-4 focus:outline-none focus:ring-yellow-300 h-8 w-16 text-center text-xs font-medium py-2 select-none rounded-md transition"
             >
               Edit
             </button>
             <button
-              onClick={() => deleteTask(props.id, props.userId)}
+              onClick={handleDelete}
               className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 h-8 w-16 text-center text-xs font-medium py-2 select-none rounded-md mr-auto transition"
             >
               Delete
@@ -86,4 +96,4 @@ const NewTask = (props) => {
   );
 };
 
-export default NewTask;
+export default Task;

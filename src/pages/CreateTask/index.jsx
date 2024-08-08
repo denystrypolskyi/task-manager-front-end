@@ -1,36 +1,42 @@
 import React, { useState } from "react";
-import { createTask } from "../../actions/task";
 import { useSelector } from "react-redux";
+
+import { createTask } from "../../actions/task.actions";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const inputStyles =
   "block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer";
 const labelStyles =
   "peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6";
+
+const taskInitialState = {
+  subject: "",
+  description: "",
+  priority: "Default",
+  dueDate: "",
+};
+
+const textColorsInitialState = {
+  dueDate: "text-gray-500",
+  priority: "text-gray-500",
+};
+
 const CreateTask = () => {
   const userId = useSelector((state) => state.user.currentUser.id);
 
-  const taskInitialState = {
-    subject: "",
-    description: "",
-    priority: "Default",
-    dueDate: "",
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
-  const textColorsInitialState = {
-    dueDate: "text-gray-500",
-    priority: "text-gray-500",
-  };
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   const [task, setTask] = useState(taskInitialState);
-  const [errors, setErrors] = useState({});
   const [textColors, setTextColors] = useState(textColorsInitialState);
-  const [btnPressed, setBtnPressed] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    setTask((prevTask) => ({
-      ...prevTask,
+    setTask((previousState) => ({
+      ...previousState,
       [name]: value,
     }));
 
@@ -38,45 +44,47 @@ const CreateTask = () => {
   };
 
   const handleCreateTask = async () => {
-    setBtnPressed(true);
-
-    const inputErrors = {};
-
-    if (task.subject.trim() === "") {
-      inputErrors.subject = "Subject is required";
-    }
-    if (task.description.trim() === "") {
-      inputErrors.description = "Description is required";
-    }
-    if (task.priority === "Default") {
-      inputErrors.priority = "Please select a priority";
-    }
-    if (!task.dueDate) {
-      inputErrors.dueDate = "Due date is required";
-    }
-
-    if (Object.keys(inputErrors).length === 0) {
-      await createTask(
-        task.subject,
-        task.description,
-        task.priority,
-        task.dueDate,
-        userId
+    if (
+      task.subject.trim() === "" ||
+      task.description.trim() === "" ||
+      task.priority === "Default" ||
+      !task.dueDate
+    ) {
+      setErrorMessage(
+        "Please fill in all required fields: subject, description, priority (select an option other than 'Default'), and due date."
       );
+      return;
+    }
 
-      setErrors({});
-      setTask(taskInitialState);
-      setTextColors(textColorsInitialState);
-      setTimeout(() => {
-        setBtnPressed(false);
-      }, 5000);
-    } else {
-      setTimeout(() => {
-        setBtnPressed(false);
-      }, 5000);
-      setErrors(inputErrors);
+    if (!errorMessage) {
+      try {
+        setIsLoading(true);
+
+        await createTask(
+          task.subject,
+          task.description,
+          task.priority,
+          task.dueDate,
+          userId
+        );
+
+        setSuccessMessage("Task created");
+        setErrorMessage(null);
+        setTask(taskInitialState);
+      } catch (error) {
+        setSuccessMessage(null);
+        setErrorMessage(error.message);
+      } finally {
+        setTextColors(textColorsInitialState);
+        setTask(taskInitialState);
+        setIsLoading(false);
+      }
     }
   };
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="sm:w-11/12 md:w-2/3 lg:w-1/2 mx-auto border p-5 rounded-lg shadow-md bg-white mt-2.5">
@@ -150,26 +158,17 @@ const CreateTask = () => {
       >
         Create
       </button>
-      {btnPressed && (
+      {(errorMessage || successMessage) && (
         <div
           className={`${
-            Object.keys(errors).length > 0 ? "text-red-500 border-red-500" : "text-green-700 border-green-700"
+            errorMessage
+              ? "text-red-500 border-red-500"
+              : "text-green-700 border-green-700"
           } text-sm absolute bottom-5 right-5 border rounded-lg select-none p-2.5`}
         >
-          {Object.keys(errors).length > 0 ? (
-            <>
-              {errors.subject && <p className="border-b">{errors.subject}</p>}
-              {errors.description && (
-                <p className="border-b">{errors.description}</p>
-              )}{" "}
-              {errors.priority && <p className="border-b">{errors.priority}</p>}
-              {errors.dueDate && <p className="border-b">{errors.dueDate}</p>}
-            </>
-          ) : (
-            <>
-              <p className="border-b">Task created</p>
-            </>
-          )}
+          <p className="border-b">
+            {errorMessage ? errorMessage : successMessage}
+          </p>
         </div>
       )}
     </div>

@@ -3,8 +3,9 @@ import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../reducers/userReducer";
 
-const Navbar = () => {
-  const isAuth = useSelector((state) => state.user.isAuth);
+const NavBar = () => {
+  const isAuthenticated = useSelector((state) => state.user.isAuth);
+
   const dispatch = useDispatch();
 
   const linkStyle =
@@ -15,30 +16,24 @@ const Navbar = () => {
       <div className="flex flex-wrap items-center mx-auto">
         <div className="mx-auto block w-auto">
           <ul className="font-medium flex p-0 rounded bg-gray-50 flex-row space-x-8 md:bg-gray-50">
-            {!isAuth ? (
+            {!isAuthenticated ? (
               <>
                 <li>
-                <NavLink to="/login">
-                  <div className={linkStyle}>
-                    Login
-                  </div>
+                  <NavLink to="/login">
+                    <div className={linkStyle}>Sign In</div>
                   </NavLink>
                 </li>
                 <li>
-                <NavLink to="/registration">
-                  <div className={linkStyle}>
-                    Register
-                  </div>
+                  <NavLink to="/register">
+                    <div className={linkStyle}>Sign Up</div>
                   </NavLink>
                 </li>
               </>
             ) : (
               <>
                 <li>
-                <NavLink to="/myTasks">
-                  <div className={linkStyle}>
-                    Tasks
-                  </div>
+                  <NavLink to="/myTasks">
+                    <div className={linkStyle}>My Tasks</div>
                   </NavLink>
                 </li>
                 <li>
@@ -47,7 +42,7 @@ const Navbar = () => {
                       className={linkStyle}
                       onClick={() => dispatch(logout())}
                     >
-                      Log out
+                      Sign Out
                     </div>
                   </NavLink>
                 </li>
@@ -60,4 +55,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavBar;

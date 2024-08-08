@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../actions/user";
-import { setError } from "../../reducers/userReducer";
+
+
+import { login } from "../../actions/user.actions";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [btnPressed, setBtnPressed] = useState(false);
-  const isError = useSelector((state) => state.user.error.isError);
-  const errorMessage = useSelector((state) => state.user.error.message);
-  const isAuth = useSelector((state) => state.user.isAuth);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const isAuthenticated = useSelector((state) => state.user.isAuth);
+
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const handleChange = (event) => {
@@ -24,44 +29,35 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = () => {
-    setBtnPressed(true);
-    const inputErrors = {};
-
-    if (email.trim() === "") {
-      inputErrors.email = "Email is required";
-    }
-    if (password.trim() === "") {
-      inputErrors.password = "Password is required";
+  const handleSubmit = async () => {
+    if (email.trim() === "" || password.trim() === "") {
+      setErrorMessage("Email and password fields are required");
+      return;
     }
 
-    if (Object.keys(inputErrors).length === 0) {
-      setErrors({});
-      dispatch(login(email, password));
-    } else {
-      setErrors(inputErrors);
+    try {
+      setIsLoading(true);
+      await dispatch(login(email, password));
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isError) {
-      setErrors({
-        error: errorMessage,
-      });
-      const error = {
-        isError: false,
-        message: "",
-      };
-      dispatch(setError(error));
-    } else {
-      if (isAuth) {
-        setErrors({
-          error: "",
-        });
-        navigate("/myTasks");
-      }
+    if (isAuthenticated) {
+      navigate("/myTasks");
     }
-  }, [isError, isAuth]);
+  }, [isAuthenticated]);
+
+  if (isLoading) {
+    return (
+      <div>
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <section className="bg-gray-50">
@@ -69,21 +65,21 @@ const Login = () => {
         <div className="w-full max-w-md bg-white rounded-lg shadow">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-              Sign in to your account
+              Sign In to Your Account
             </h1>
             <div>
               <label
                 htmlFor="email"
                 className="block mb-2 text-sm font-medium text-gray-900"
               >
-                Your email
+                Your Email
               </label>
               <input
                 type="email"
                 name="email"
                 id="email"
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-                placeholder="name@company.com"
+                placeholder="Name@Company.com"
                 required=""
                 onChange={handleChange}
                 value={email}
@@ -111,30 +107,20 @@ const Login = () => {
               className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               onClick={handleSubmit}
             >
-              Sign in
+              Sign In
             </button>
-            {(errors.email ||
-              errors.password ||
-              (errors.error != "" && errors.error)) && (
+            {errorMessage && (
               <div className="text-red-700 text-sm absolute bottom-5 right-5 p-2.5 border rounded-lg select-none border-red-500">
-                      {errors.email && (
-                        <p className="border-b">{errors.email}</p>
-                      )}
-                      {errors.password && (
-                        <p className="border-b">{errors.password}</p>
-                      )}
-                      {errors.error && (
-                        <p className="border-b">{errors.error}</p>
-                      )}
+                <p className="border-b">{errorMessage}</p>
               </div>
             )}
             <p className="text-sm font-light text-gray-500">
               Don’t have an account yet?{" "}
               <Link
-                to="/registration"
+                to="/register"
                 className="font-medium text-blue-600 hover:underline"
               >
-                Sign up
+                Sign Up
               </Link>
             </p>
           </div>

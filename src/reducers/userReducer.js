@@ -5,7 +5,7 @@ const SET_ERROR = "SET_ERROR";
 const defaultState = {
   currentUser: {},
   isAuth: false,
-  error: { isError: false, message: "" },
+  error: null,
 };
 
 export default function userReducer(state = defaultState, action) {
