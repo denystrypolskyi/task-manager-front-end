@@ -4,3 +4,7 @@
 ./package-lock.json
 
 ./src/config.js
+
+.firebase
+
+.env

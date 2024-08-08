@@ -16,21 +16,6 @@ const MyTasks = () => {
 
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await axios.get(
-  //       "http://localhost:5000/api/task/testroute",
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //         },
-  //       }
-  //     );
-
-  //     setIsLoading(false);
-  //   };
-  //   fetchData();
-  // }, []);
   useEffect(() => {
     if (userId !== undefined) {
       dispatch(getUserTasks(userId)).finally(() => {
